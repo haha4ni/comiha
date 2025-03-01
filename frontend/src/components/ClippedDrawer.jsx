@@ -128,6 +128,14 @@ const extractBookInfo = (filepath) => {
       }
 
       try {
+        setDisplayTitle("");
+        setDisplayVolume("");
+        setDisplayWriter("");
+        setDisplayPublisher("");
+        setDisplayReleaseDate("");
+        setDisplayPageCount("");
+        setDisplayEpubFormat("");
+        setDisplayDescription("");
         const { bookTitle, bookVolume } = extractBookInfo(filepath);
         const comicInfo = await GetScraper(bookTitle, bookVolume);
         console.log("ComicInfo:", comicInfo);

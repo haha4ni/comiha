@@ -300,6 +300,35 @@ func ScraperTest(){
 }
 
 func ScraperInfo(title string, volume string) (*BookInfo, error) {
+
+	db, err := InitDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	// 先查詢 SQLite 快取
+	var bookInfo BookInfo
+	var tagsStr string
+	err = db.QueryRow(`SELECT author, tags, publisher, release_date, page_count, epub_format, description
+                      FROM books WHERE name = ? AND volume = ?`, title, volume).
+		Scan(&bookInfo.Author, &tagsStr, &bookInfo.Publisher, &bookInfo.ReleaseDate, &bookInfo.PageCount, &bookInfo.EPUBFormat, &bookInfo.Description)
+
+	if err == nil {
+		// 解析 tags（存成 JSON 格式時，這裡應該 `json.Unmarshal`）
+		bookInfo.Tags = strings.Split(tagsStr, ",")
+		bookInfo.Title = title
+		bookInfo.Volume = volume
+		log.Println("從 SQLite 快取讀取:", bookInfo)
+		return &bookInfo, nil
+	}
+
+	// 沒找到快取，執行爬蟲
+	log.Println("快取未找到，開始爬取:", title, volume)
+
+
+
+	
 	seriesURL, err := FindBookURL(title)
 	if err != nil {
 		log.Fatal(err)
@@ -313,12 +342,31 @@ func ScraperInfo(title string, volume string) (*BookInfo, error) {
 	}
 	fmt.Println("找到的書籍詳細頁面網址:", bookURL)
 
-	bookInfo, err := FindBookInfo(bookURL)
+	// bookInfo, err := FindBookInfo(bookURL)
+	bookInfoPtr, err := FindBookInfo(bookURL) // `FindBookInfo()` 回傳 `*BookInfo`
 	if err != nil {
 		log.Fatal(err)
 	}
+	bookInfo = *bookInfoPtr // 解除指標
+
 	bookInfo.Title = title
 	bookInfo.Volume = volume
 
-	return bookInfo, nil
+	// **存入 SQLite**
+	tagsStr = strings.Join(bookInfo.Tags, ",") // 將 `tags` 陣列轉成字串
+	log.Println("💾 嘗試存入 SQLite:", bookInfo.Title, bookInfo.Volume)
+
+	_, err = db.Exec(`INSERT INTO books (name, volume, author, tags, publisher, release_date, page_count, epub_format, description)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		bookInfo.Title, bookInfo.Volume, bookInfo.Author, tagsStr, bookInfo.Publisher,
+		bookInfo.ReleaseDate, bookInfo.PageCount, bookInfo.EPUBFormat, bookInfo.Description)
+
+	if err != nil {
+		log.Println("❌ 存入 SQLite 失敗:", err)
+	} else {
+		log.Println("✅ 成功存入 SQLite 快取:", bookInfo.Title, bookInfo.Volume)
+	}
+
+	// return bookInfo, nil
+	return &bookInfo, nil
 }
