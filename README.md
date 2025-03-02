@@ -1,5 +1,7 @@
 # README
 
+![My Skills](https://go-skill-icons.vercel.app/api/icons?i=wails,react,golang,sqlite)
+
 ## TODO list
 
 
