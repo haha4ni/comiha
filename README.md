@@ -18,9 +18,11 @@
 - [ ] CSS自定義介面色彩
 
 
-Long-term
-[] web
-[] Docker容器
+#### Long-term
+
+- [ ] web
+
+- [ ] Docker容器
 
 
 ## About
