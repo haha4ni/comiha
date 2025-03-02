@@ -1,5 +1,28 @@
 # README
 
+## TODO list
+
+
+- [ ] 暫存縮圖存放
+
+- [ ] 漫畫閱讀
+
+- [ ] 無邊界視窗閱讀
+
+- [ ] 定義comicinfo R/W
+
+- [ ] 分類選單
+
+- [ ] i18n多國語言
+
+- [ ] CSS自定義介面色彩
+
+
+Long-term
+[] web
+[] Docker容器
+
+
 ## About
 
 This is the official Wails React template.
