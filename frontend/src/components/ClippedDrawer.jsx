@@ -30,6 +30,7 @@ import {
   ReadComicInfoXML,
   OpenDirectoryDialog,
   GetScraper,
+  GetThumbnails,
 } from "../../wailsjs/go/main/App";
 
 const drawerWidth = 55;
@@ -156,6 +157,21 @@ export default function DoubleDrawer() {
       } catch (err) {
         console.error("取得 Scraper 資訊失敗:", err);
       }
+
+      // 縮圖
+      try {
+        console.log("Selected file:", filepath); // ✅ Debug: 確保有選擇 ZIP
+
+        const thumbnails = await GetThumbnails(filepath);
+        if (!thumbnails || thumbnails.length === 0) {
+          console.error("❌ 沒有縮圖可用");
+          return;
+        }
+
+        setThumbnailList(thumbnails); // ✅ 存入狀態
+      } catch (error) {
+        console.error("❌ 讀取縮圖失敗:", error);
+      }
     }
   };
 
@@ -192,6 +208,12 @@ export default function DoubleDrawer() {
       console.error("Failed to select path:", error);
     }
   };
+  const [thumbnailList, setThumbnailList] = useState([]); // ✅ 定義縮圖狀態
+
+  // const [thumbnails, setThumbnails] = useState([]);
+  // useEffect(() => {
+  //   GetThumbnails().then(setThumbnails);
+  // }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -297,12 +319,15 @@ export default function DoubleDrawer() {
           }}
         >
           {/* 讓圖片 & 書籍資訊並排 */}
-          <Box sx={{ display: "flex", 
-            gap: 2  ,
-            backgroundColor: "#f5f5f5", // ✅ 設定背景顏色為淺灰色
-            borderRadius: "10px", // ✅ 設定圓角
-            padding: 2, // ✅ 內邊距，讓內容不貼邊
-            }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              backgroundColor: "#f5f5f5", // ✅ 設定背景顏色為淺灰色
+              borderRadius: "10px", // ✅ 設定圓角
+              padding: 2, // ✅ 內邊距，讓內容不貼邊
+            }}
+          >
             {/* 左側圖片區域 */}
             <Box sx={{ flex: 1 }}>
               {imageList.map((img, index) => (
@@ -361,6 +386,35 @@ export default function DoubleDrawer() {
             </Box>
           </Box>
         </Typography>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          {thumbnailList
+            // 將圖片根據檔名中的數字部分進行排序
+  .sort((a, b) => {
+    // 提取數字部分進行比較
+    const numA = parseInt(a.FileName, 10);
+    const numB = parseInt(b.FileName, 10);
+    return numA - numB;
+  })
+          
+          .map((img, index) => {
+            // console.log("Image data for", img.FileName, ":", img.Thumbnail); // 檢查每個縮圖的資料
+            console.log("Image data for", img.FileName, ":"); // 檢查每個縮圖的資料
+            return (
+              <img
+                key={index}
+                src={`data:image/jpeg;base64,${img.Thumbnail}`}
+                alt={img.FileName}
+                style={{
+                  width: "215px",
+                  height: "320px",
+                  borderRadius: "10px",
+                  margin: "5px",
+                  boxShadow: "0px 4px 6px rgba(0,0,0,0.1)", // ✅ 陰影
+                }}
+              />
+            );
+          })}
+        </div>
       </Box>
     </Box>
   );

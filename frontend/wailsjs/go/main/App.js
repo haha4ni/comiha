@@ -26,6 +26,10 @@ export function GetScraper(arg1, arg2) {
   return window['go']['main']['App']['GetScraper'](arg1, arg2);
 }
 
+export function GetThumbnails(arg1) {
+  return window['go']['main']['App']['GetThumbnails'](arg1);
+}
+
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }

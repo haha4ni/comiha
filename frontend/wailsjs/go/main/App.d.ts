@@ -15,6 +15,8 @@ export function GetImageBytes(arg1:string):Promise<Array<number>>;
 
 export function GetScraper(arg1:string,arg2:string):Promise<utils.BookInfo>;
 
+export function GetThumbnails(arg1:string):Promise<Array<utils.ImageData>>;
+
 export function Greet(arg1:string):Promise<string>;
 
 export function OpenDirectoryDialog():Promise<string>;

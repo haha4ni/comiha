@@ -7,6 +7,7 @@ toolchain go1.23.4
 require (
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/wailsapp/wails/v2 v2.9.2
 	modernc.org/sqlite v1.36.0
 )

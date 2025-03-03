@@ -363,3 +363,39 @@ func (a *App) ReadComicInfoXML(zipPath string) (*ComicInfo, error) {
 
 	return nil, fmt.Errorf("ComicInfo.xml not found")
 }
+
+
+
+
+func (a *App) GetThumbnails(zipPath string) ([]utils.ImageData, error) {
+	db, err := utils.InitThumbnailDB()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	// 先嘗試讀取快取
+	thumbnails, err := utils.GetCachedThumbnails(db)
+	if err == nil && len(thumbnails) > 0 {
+		log.Println("✅ 縮圖已從快取讀取")
+		return thumbnails, nil
+	}
+
+	// 如果快取不存在或是空的，則重新生成縮圖並存入快取
+	log.Println("❌ 縮圖快取不存在，開始處理 ZIP:", zipPath)
+	err = utils.CacheThumbnails(db, zipPath)
+	if err != nil {
+		log.Println("❌ 快取縮圖失敗:", err)
+		return nil, err
+	}
+
+	// 重新讀取快取
+	thumbnails, err = utils.GetCachedThumbnails(db)
+	if err != nil {
+		log.Println("❌ 讀取縮圖快取失敗:", err)
+		return nil, err
+	}
+
+	log.Println("✅ 縮圖快取成功，已載入", len(thumbnails), "張圖片")
+	return thumbnails, nil
+}
