@@ -17,9 +17,10 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "myprojectre",
+		Title:  "Comiha",
 		Width:  720,
 		Height: 480,
+		// Frameless: true, // ✅ 設定無邊框
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

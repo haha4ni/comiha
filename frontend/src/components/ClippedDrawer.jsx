@@ -17,7 +17,7 @@ import Button from "@mui/material/Button";
 
 import PathTree from "./PathTree.jsx";
 import path from "path"; // 確保已經匯入 path 模組
-import {   TextField } from '@mui/material';
+import { TextField } from "@mui/material";
 // Wails API
 import {
   GetImageBase64,
@@ -44,53 +44,56 @@ export default function DoubleDrawer() {
   const [day, setDay] = useState("");
   const [writer, setWriter] = useState("");
 
-
   // **新增**：顯示在圖片右側的書籍資訊
-const [displayTitle, setDisplayTitle] = useState("");
-const [displayVolume, setDisplayVolume] = useState("");
-const [displayWriter, setDisplayWriter] = useState("");
-const [displayPublisher, setDisplayPublisher] = useState("");
-const [displayReleaseDate, setDisplayReleaseDate] = useState("");
-const [displayPageCount, setDisplayPageCount] = useState("");
-const [displayEpubFormat, setDisplayEpubFormat] = useState("");
-const [displayDescription, setDisplayDescription] = useState("");
-  
-const extractBookInfo = (filepath) => {
-  const filename = filepath.split(/[/\\]/).pop(); // 取得檔案名稱，不管是 / 或 \
-  
-  // 嘗試匹配：書名 + 任意格式的集數
-  const match = filename.match(/^(.+?)\s*[\(\[\{]?\s*(\d+)\s*[\)\]\}]?\s*(?:\.\w+)?$/);
+  const [displayTitle, setDisplayTitle] = useState("");
+  const [displayVolume, setDisplayVolume] = useState("");
+  const [displayWriter, setDisplayWriter] = useState("");
+  const [displayPublisher, setDisplayPublisher] = useState("");
+  const [displayReleaseDate, setDisplayReleaseDate] = useState("");
+  const [displayPageCount, setDisplayPageCount] = useState("");
+  const [displayEpubFormat, setDisplayEpubFormat] = useState("");
+  const [displayDescription, setDisplayDescription] = useState("");
 
-  if (match) {
-    return {
-      bookTitle: match[1].trim(), // 書名
-      bookVolume: match[2].trim(), // 集數
-    };
-  }
+  const extractBookInfo = (filepath) => {
+    const filename = filepath.split(/[/\\]/).pop(); // 取得檔案名稱，不管是 / 或 \
 
-  return { bookTitle: "", bookVolume: "" }; // 匹配失敗，回傳空字串
-};
+    // 嘗試匹配：書名 + 任意格式的集數
+    const match = filename.match(
+      /^(.+?)\s*[\(\[\{]?\s*(\d+)\s*[\)\]\}]?\s*(?:\.\w+)?$/
+    );
 
+    if (match) {
+      return {
+        bookTitle: match[1].trim(), // 書名
+        bookVolume: match[2].trim(), // 集數
+      };
+    }
+
+    return { bookTitle: "", bookVolume: "" }; // 匹配失敗，回傳空字串
+  };
 
   const handleSubmit = () => {
-    console.log('Series:', series);
-    console.log('Title:', title);
+    console.log("Series:", series);
+    console.log("Title:", title);
     setOpen(false);
   };
   const [selectedPath, setSelectedPath] = useState("");
   const [imageList, setImageList] = useState([]);
 
-  const handleSelect = async (filepath) => {  // 把 handleSelect 標記為 async
+  const handleSelect = async (filepath) => {
+    // 把 handleSelect 標記為 async
     setSelectedPath(filepath);
-    console.log("Selected file:", filepath);  // 打印 filepath
-  console.log("Type of filepath:", typeof filepath);  // 顯示 filepath 的型態 
+    console.log("Selected file:", filepath); // 打印 filepath
+    console.log("Type of filepath:", typeof filepath); // 顯示 filepath 的型態
 
     // 使用原生 JavaScript 字串處理檔案副檔名
-    const ext = filepath.slice(((filepath.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
-    console.log("file ext:", ext);  // 打印 filepath
+    const ext = filepath
+      .slice(((filepath.lastIndexOf(".") - 1) >>> 0) + 2)
+      .toLowerCase();
+    console.log("file ext:", ext); // 打印 filepath
     if (ext === "zip") {
       // 在 async 函式內使用 await
-      const images = await ExtractImagesFromZipByPages(filepath, 0); 
+      const images = await ExtractImagesFromZipByPages(filepath, 0);
       if (images && images.length > 0) {
         const formattedImages = images.map((img) => ({
           fileName: img.FileName,
@@ -98,7 +101,7 @@ const extractBookInfo = (filepath) => {
           base64Data: img.Base64Data,
         }));
         // 打印 formattedImages 來檢視結果
-      console.log("Formatted Images:", formattedImages);
+        console.log("Formatted Images:", formattedImages);
         setImageList(formattedImages); // 儲存圖片 Base64 字串陣列
       } else {
         window.alert("ZIP 檔內沒有圖片");
@@ -108,8 +111,8 @@ const extractBookInfo = (filepath) => {
         // 讀取 ComicInfo.xml
         const comicInfo = await ReadComicInfoXML(filepath);
         console.log("ComicInfo:", comicInfo);
-  
-      if (comicInfo) {
+
+        if (comicInfo) {
           setSeries(comicInfo.Series || "");
           setTitle(comicInfo.Title || "");
           setYear(comicInfo.Year ? comicInfo.Year.toString() : "");
@@ -139,7 +142,7 @@ const extractBookInfo = (filepath) => {
         const { bookTitle, bookVolume } = extractBookInfo(filepath);
         const comicInfo = await GetScraper(bookTitle, bookVolume);
         console.log("ComicInfo:", comicInfo);
-  
+
         if (comicInfo) {
           setDisplayTitle(comicInfo.Title || "");
           setDisplayVolume(comicInfo.Volume || "");
@@ -153,10 +156,6 @@ const extractBookInfo = (filepath) => {
       } catch (err) {
         console.error("取得 Scraper 資訊失敗:", err);
       }
-
-
-
-
     }
   };
 
@@ -176,14 +175,12 @@ const extractBookInfo = (filepath) => {
     }
   }, [secondDrawerOpen]);
 
-
-
   const [selectedFolderPath, setSelectedFolderPath] = useState("./comic");
 
   const handleFolderSelect = (path) => {
     setSelectedFolderPath(path);
   };
-  
+
   const handleOpenFileDialog = async () => {
     try {
       const path = await OpenDirectoryDialog();
@@ -201,7 +198,7 @@ const extractBookInfo = (filepath) => {
       <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 2, height: 50}}
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 2, height: 50 }}
       >
         <Toolbar variant="dense">
           <Typography variant="h6" noWrap component="div">
@@ -222,20 +219,31 @@ const extractBookInfo = (filepath) => {
           },
         }}
       >
-        <Box sx={{ height: 50 }} />  {/* 使用 Box 墊高 */}
+        <Box sx={{ height: 50 }} /> {/* 使用 Box 墊高 */}
         <Box sx={{ overflow: "auto" }}>
           <List>
             {["Inbox"].map((text, index) => (
               <ListItem key={text} disablePadding>
-                <ListItemButton onClick={toggleSecondDrawer}sx={{ paddingY: 0.0 }}>
-                <ListItemIcon sx={{ minWidth: 0, display: 'flex', justifyContent: 'center', padding: 0 }}>
+                <ListItemButton
+                  onClick={toggleSecondDrawer}
+                  sx={{ paddingY: 0.0 }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      display: "flex",
+                      justifyContent: "center",
+                      padding: 0,
+                    }}
+                  >
                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                   </ListItemIcon>
-                  <ListItemText primary={text} 
+                  <ListItemText
+                    primary={text}
                     sx={{
-                      width: '0',  // 根據 Drawer 開啟狀態調整寬度
-                      opacity: 0,  // 在關閉時隱藏文本
-                      overflow: 'hidden',  // 防止多餘的內容顯示
+                      width: "0", // 根據 Drawer 開啟狀態調整寬度
+                      opacity: 0, // 在關閉時隱藏文本
+                      overflow: "hidden", // 防止多餘的內容顯示
                     }}
                   />
                 </ListItemButton>
@@ -266,74 +274,94 @@ const extractBookInfo = (filepath) => {
       >
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
-        <Button variant="contained" onClick={handleOpenFileDialog} sx={{ mb: 2 }}>
+          <Button
+            variant="contained"
+            onClick={handleOpenFileDialog}
+            sx={{ mb: 2 }}
+          >
             選擇路徑
           </Button>
-          <PathTree onSelect={handleSelect} selectedFolderPath={selectedFolderPath} />
+          <PathTree
+            onSelect={handleSelect}
+            selectedFolderPath={selectedFolderPath}
+          />
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-  <Toolbar />
+        <Toolbar />
 
-  <Typography sx={{ transition: "margin-left 0.3s ease", marginLeft: `${paragraphMargin}px` }}>
-    <text>
-      {/* {selectedPath ? `選取的路徑: ${selectedPath}` : "尚未選取路徑"}
-      {selectedPath ? `` : "尚未選取路徑"} */}
-    </text>
-    <br />
+        <Typography
+          sx={{
+            transition: "margin-left 0.3s ease",
+            marginLeft: `${paragraphMargin}px`,
+          }}
+        >
+          {/* 讓圖片 & 書籍資訊並排 */}
+          <Box sx={{ display: "flex", 
+            gap: 2  ,
+            backgroundColor: "#f5f5f5", // ✅ 設定背景顏色為淺灰色
+            borderRadius: "10px", // ✅ 設定圓角
+            padding: 2, // ✅ 內邊距，讓內容不貼邊
+            }}>
+            {/* 左側圖片區域 */}
+            <Box sx={{ flex: 1 }}>
+              {imageList.map((img, index) => (
+                <img
+                  key={index}
+                  src={`data:image/${img.extension.replace(".", "")};base64,${
+                    img.base64Data
+                  }`}
+                  alt={img.fileName || `Image ${index + 1}`}
+                  style={{
+                    maxWidth: "100%",
+                    height: "auto",
+                    aspectRatio: "215 / 320",
+                    maxHeight: "calc(100vh - 160px)",
+                    objectFit: "cover",
+                    margin: "5px",
+                    borderRadius: "10px", // ✅ 設定圖片圓角
+                  }}
+                />
+              ))}
+            </Box>
 
-    {/* 讓圖片 & 書籍資訊並排 */}
-    <Box sx={{ display: "flex", gap: 2 }}>  
-      {/* 左側圖片區域 */}
-      <Box sx={{ flex: 1 }}>
-        {imageList.map((img, index) => (
-          <img
-            key={index}
-            src={`data:image/${img.extension.replace(".", "")};base64,${img.base64Data}`}
-            alt={img.fileName || `Image ${index + 1}`}
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-              aspectRatio: "215 / 320",
-              maxHeight: "calc(100vh - 160px)",
-              objectFit: "cover",
-              margin: "5px",
-            }}
-          />
-        ))}
+            {/* 右側書籍資訊區域 */}
+            <Box sx={{ flex: 1, textAlign: "left" }}>
+              {selectedPath ? (
+                <>
+                  <Typography variant="h6">{displayTitle}</Typography>
+                  <Typography variant="body1">集數: {displayVolume}</Typography>
+                  <Typography variant="body1">作者: {displayWriter}</Typography>
+                  <Typography variant="body1">
+                    出版社: {displayPublisher}
+                  </Typography>
+                  <Typography variant="body1">
+                    發售日: {displayReleaseDate}
+                  </Typography>
+                  <Typography variant="body1">
+                    頁數: {displayPageCount}
+                  </Typography>
+                  <Typography variant="body1">
+                    EPUB格式: {displayEpubFormat}
+                  </Typography>
+                  <Typography sx={{ mt: 2 }}>內容簡介:</Typography>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    margin="dense"
+                    multiline
+                    minRows={4}
+                    value={displayDescription}
+                    onChange={(e) => setDisplayDescription(e.target.value)}
+                  />
+                </>
+              ) : (
+                ""
+              )}
+            </Box>
+          </Box>
+        </Typography>
       </Box>
-
-      {/* 右側書籍資訊區域 */}
-      <Box sx={{ flex: 1 ,textAlign: "left" }}>
-      {selectedPath ? (
-    <>
-        <Typography variant="h6">{displayTitle}</Typography>
-        <Typography variant="body1">集數: {displayVolume}</Typography>
-        <Typography variant="body1">作者: {displayWriter}</Typography>
-        <Typography variant="body1">出版社: {displayPublisher}</Typography>
-        <Typography variant="body1">發售日: {displayReleaseDate}</Typography>
-        <Typography variant="body1">頁數: {displayPageCount}</Typography>
-        <Typography variant="body1">EPUB格式: {displayEpubFormat}</Typography>
-        <Typography sx={{ mt: 2 }}>內容簡介:</Typography>
-        <TextField
-          fullWidth
-          size="small"
-          margin="dense"
-          multiline
-          minRows={4}
-          value={displayDescription}
-          onChange={(e) => setDisplayDescription(e.target.value)}
-        />
-    </>
-) : ""}
-
-
-      </Box>
-    </Box>
-  </Typography>
-</Box>
-
-
     </Box>
   );
 }
